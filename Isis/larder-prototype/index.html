@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Larder — Card Import</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800;900&family=Homemade+Apple&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="window" role="application" aria-label="Larder">
+    <header class="titlebar">
+      <span class="lights" aria-hidden="true"><i></i><i></i><i></i></span>
+      <span class="titlebar-name">Larder</span>
+    </header>
+
+    <div class="shell">
+      <nav class="sidebar" aria-label="Main" data-ref="F">
+        <a class="nav-item" href="#" data-action="go-box" aria-current="page">
+          <span class="nav-label"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 7.5h17v3h-17z"/><path d="M5 10.5v9h14v-9"/><path d="M10 14h4"/></svg>Box</span><span class="count" id="box-count">11</span>
+        </a>
+        <p class="nav-group">Collections</p>
+        <a class="nav-item sub" href="#" data-action="noop"><span>Grandma’s</span><span class="count">4</span></a>
+        <a class="nav-item sub" href="#" data-action="noop"><span>Baking</span><span class="count">3</span></a>
+        <a class="nav-item sub" href="#" data-action="noop"><span>Holidays</span><span class="count">2</span></a>
+        <a class="nav-item sub" href="#" data-action="noop"><span>Magazine clippings</span><span class="count">3</span></a>
+        <div class="nav-sep"></div>
+        <a class="nav-item" href="#" data-action="noop"><span class="nav-label"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5.5" width="16" height="14" rx="2"/><path d="M4 10h16M8.5 3.5v4M15.5 3.5v4"/></svg>Meal Plan</span></a>
+        <a class="nav-item" href="#" data-action="noop"><span class="nav-label"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 7h11M9 12h11M9 17h11"/><circle cx="5" cy="7" r="1"/><circle cx="5" cy="12" r="1"/><circle cx="5" cy="17" r="1"/></svg>Shopping List</span></a>
+        <a class="nav-item" href="#" data-action="noop"><span class="nav-label"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 3.5v2.5M12 18v2.5M3.5 12H6M18 12h2.5M6 6l1.8 1.8M16.2 16.2L18 18M6 18l1.8-1.8M16.2 7.8L18 6"/></svg>Settings</span></a>
+
+        <div class="backup-status" id="backup-status">
+          <strong>Backup</strong>
+          <span id="backup-line">Last exported Sep 20 to <em>Documents › Larder backup</em></span>
+        </div>
+      </nav>
+
+      <main id="view" tabindex="-1"></main>
+    </div>
+  </div>
+
+  <div id="modal-root"></div>
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <button class="notes-toggle" id="notes-toggle" aria-pressed="false" aria-controls="notes">Design notes</button>
+  <aside class="notes" id="notes" aria-label="Design notes" hidden>
+    <header class="notes-head">
+      <h2>Design notes</h2>
+      <p>Lettered pins on the screen map to the reference or decision that shaped them. Visual reference: Tripadvisor, iOS, Explore screen.</p>
+      <img src="mobbin-tripadvisor-explore.png" alt="Tripadvisor Explore screen, used as the visual reference" class="notes-ref-img">
+    </header>
+    <ol class="notes-list" id="notes-list"></ol>
+  </aside>
+
+  <script src="app.js"></script>
+</body>
+</html>
