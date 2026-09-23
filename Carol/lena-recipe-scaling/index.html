@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Larder — Box</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Karla:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div class="app-shell">
+
+  <header class="topbar">
+    <span class="wordmark">Larder</span>
+    <span class="tagline">— your Box</span>
+  </header>
+
+  <!-- ============================================================ -->
+  <!-- Screen 1: Box                                                  -->
+  <!-- ============================================================ -->
+  <main id="view-box" class="view" data-view="box">
+    <div class="box-header">
+      <h1>Box</h1>
+      <input class="box-search" type="search" placeholder="Search by title, tag, or ingredient" aria-label="Search recipes" />
+    </div>
+
+    <div class="recipe-grid" id="recipe-grid"></div>
+  </main>
+
+  <!-- ============================================================ -->
+  <!-- Screen 2: Recipe Detail                                        -->
+  <!-- ============================================================ -->
+  <main id="view-detail" class="view" data-view="detail" hidden>
+    <a class="back-link" href="#/box">&larr; Back to Box</a>
+
+    <div class="recipe-sheet">
+      <aside class="recipe-rail">
+        <div class="recipe-photo" aria-hidden="true" id="detail-photo"></div>
+
+        <button type="button" class="type-badge" id="type-badge" data-active="true" aria-pressed="true">
+          <span class="dot"></span>
+          <span id="type-badge-label">Baking · auto-detected</span>
+        </button>
+
+        <div class="rail-block">
+          <h3>Utensils</h3>
+          <ul class="utensil-list" id="utensil-list"></ul>
+        </div>
+
+        <p class="source-note" id="source-note"></p>
+      </aside>
+
+      <section class="recipe-main">
+        <h1 id="detail-title"></h1>
+        <p class="recipe-subtitle" id="detail-subtitle"></p>
+
+        <div class="recipe-controls">
+          <div class="control-group">
+            <span class="control-label" id="servings-label">Serves</span>
+            <select class="servings-select" id="servings-select" aria-labelledby="servings-label"></select>
+          </div>
+
+          <div class="control-group">
+            <span class="control-label">Units</span>
+            <div class="unit-toggle">
+              <input type="radio" name="units" id="unit-us" value="us" checked />
+              <label for="unit-us">Cups</label>
+              <input type="radio" name="units" id="unit-metric" value="metric" />
+              <label for="unit-metric">Grams</label>
+            </div>
+          </div>
+        </div>
+
+        <h2 class="section-heading">Ingredients</h2>
+        <p class="scale-note" id="scale-note">Amounts are scaled from the original 8-serving recipe and rounded to the nearest practical measure — not a raw multiply.</p>
+
+        <div class="caveat-banner" id="caveat-banner" data-visible="false" role="status">
+          <span class="glyph">!</span>
+          <span>This is a baking recipe. Scaling adjusts ingredient amounts proportionally, but leavening and bake time don't scale the same way — start checking for doneness a few minutes early, and expect the rise to vary slightly from the original.</span>
+        </div>
+
+        <ul class="ingredient-list" id="ingredient-list" aria-live="polite"></ul>
+
+        <h2 class="section-heading">Steps</h2>
+        <ol class="step-list" id="step-list"></ol>
+
+        <a class="primary-button" href="#/cook-mode">Start Cooking</a>
+      </section>
+    </div>
+  </main>
+
+  <!-- ============================================================ -->
+  <!-- Screen 3: honest out-of-scope stub, reused for Cook Mode and   -->
+  <!-- for the Box's other recipe cards (this prototype builds one    -->
+  <!-- complete flow, not full IA coverage — see DCCD-1's Out of      -->
+  <!-- Scope note).                                                   -->
+  <!-- ============================================================ -->
+  <main id="view-stub" class="view" data-view="stub" hidden>
+    <a class="back-link" id="stub-back" href="#/box">&larr; Back</a>
+    <div class="stub-card">
+      <h1 id="stub-title"></h1>
+      <p id="stub-message"></p>
+      <a class="back-link" href="#/box" style="margin: 0;">&larr; Back to Box</a>
+    </div>
+  </main>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
