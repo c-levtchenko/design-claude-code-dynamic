@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Larder: Card Import</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Reenie+Beanie&family=Young+Serif&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Prototype frame: a desktop app window on a desk. Larder is desktop-only in V1. -->
+  <div class="window" role="application" aria-label="Larder">
+    <header class="titlebar">
+      <span class="lights" aria-hidden="true"><i></i><i></i><i></i></span>
+      <span class="titlebar-name">Larder</span>
+    </header>
+
+    <div class="app">
+      <nav class="sidebar" aria-label="Main">
+        <ul class="nav">
+          <li><button class="nav-item" data-nav="box">Box</button></li>
+          <li><button class="nav-item" data-nav="stub:Meal Plan">Meal Plan</button></li>
+          <li><button class="nav-item" data-nav="stub:Shopping List">Shopping List</button></li>
+        </ul>
+        <p class="nav-heading">Collections</p>
+        <ul class="nav nav-collections" id="nav-collections"></ul>
+        <div class="sidebar-foot">
+          <button class="nav-item" data-nav="stub:Settings">Settings</button>
+          <p class="backup-note">Your recipes are files in <strong>Documents / Larder</strong>. No account needed.</p>
+        </div>
+      </nav>
+
+      <main class="view" id="view" tabindex="-1"></main>
+    </div>
+  </div>
+
+  <!-- Prototype-only tooling, outside the product window -->
+  <button class="notes-toggle" id="notes-toggle" aria-expanded="false" aria-controls="notes">Design notes <kbd>?</kbd></button>
+  <aside class="notes" id="notes" aria-label="Design notes" hidden>
+    <div class="notes-head">
+      <h2>Why this screen looks like this</h2>
+      <button class="icon-btn" id="notes-close" aria-label="Close design notes">&times;</button>
+    </div>
+    <div id="notes-body"></div>
+  </aside>
+
+  <dialog id="dlg-cancel" class="dialog">
+    <h2>Stop importing this card?</h2>
+    <p>Nothing has been added to your Box yet. Your photo stays exactly where it was on your computer.</p>
+    <div class="dialog-actions">
+      <button class="btn btn-quiet" data-close>Stop and go back</button>
+      <button class="btn btn-primary" data-keep autofocus>Keep checking</button>
+    </div>
+  </dialog>
+
+  <dialog id="dlg-finder" class="dialog dialog-finder">
+    <div class="finder-bar">
+      <span class="lights" aria-hidden="true"><i></i><i></i><i></i></span>
+      <span>Documents / Larder / Box</span>
+    </div>
+    <div class="finder">
+      <ul class="finder-files" id="finder-files"></ul>
+      <pre class="finder-preview" id="finder-preview"></pre>
+    </div>
+    <div class="dialog-actions">
+      <button class="btn btn-primary" data-close autofocus>Close</button>
+    </div>
+  </dialog>
+
+  <div class="sr-only" aria-live="polite" id="live"></div>
+  <script src="app.js"></script>
+</body>
+</html>
