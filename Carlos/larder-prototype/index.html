@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Larder — Reviewing an import</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;1,500&family=Karla:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<!-- Reusable source-card artwork (an original, abstracted stand-in for a handwritten
+     recipe card — not a reproduction of any real document). Drawn once, reused at two
+     crop levels: the small thumbnail in the review pane, and a "zoomed" crop behind
+     the flagged line. -->
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <symbol id="recipe-card" viewBox="0 0 300 400">
+      <rect x="0" y="0" width="300" height="400" rx="4" fill="#f7edd6" />
+      <rect x="0" y="0" width="300" height="400" rx="4" fill="none" stroke="#e3d3ab" stroke-width="2" />
+      <line x1="34" y1="0" x2="34" y2="400" stroke="#b6583f" stroke-width="2" opacity="0.75" />
+
+      <!-- title -->
+      <polyline points="46,46 62,38 80,47 98,37 116,45 132,39 150,44" fill="none" stroke="#33271b" stroke-width="4.5" stroke-linecap="round" />
+
+      <!-- rule lines -->
+      <g stroke="#9db2bc" stroke-width="1.4" opacity="0.8">
+        <line x1="34" y1="82" x2="284" y2="82" />
+        <line x1="34" y1="108" x2="284" y2="108" />
+        <line x1="34" y1="134" x2="284" y2="134" />
+        <line x1="34" y1="160" x2="284" y2="160" />
+        <line x1="34" y1="186" x2="284" y2="186" />
+        <line x1="34" y1="212" x2="284" y2="212" />
+        <line x1="34" y1="238" x2="284" y2="238" />
+        <line x1="34" y1="264" x2="284" y2="264" />
+        <line x1="34" y1="290" x2="284" y2="290" />
+        <line x1="34" y1="316" x2="284" y2="316" />
+      </g>
+
+      <!-- ingredient handwriting, line by line -->
+      <g fill="none" stroke="#3a2c1e" stroke-width="2.6" stroke-linecap="round" opacity="0.88">
+        <polyline points="44,74 58,69 70,75 84,70 96,74 110,71 120,74" />
+        <!-- flagged line: overlapping / doubled stroke suggests a smudge the parser struggled with -->
+        <polyline points="44,100 56,94 66,101 78,93 90,100" stroke="#b6583f" stroke-width="4" opacity="0.55" />
+        <polyline points="46,101 58,96 68,102 80,95 92,101 104,97" />
+        <polyline points="44,126 62,120 82,127 100,121 112,126" />
+        <polyline points="44,152 54,147 64,153 74,147 84,152" />
+        <polyline points="44,178 64,172 88,179 110,173 128,178 144,174" />
+        <polyline points="44,204 58,199 72,205 86,199 98,204" />
+        <polyline points="44,230 60,224 78,231 96,225 108,230" />
+        <polyline points="44,256 52,251 60,257 68,251" />
+      </g>
+
+      <!-- a short paragraph suggestion (steps, below the ingredient block) -->
+      <g fill="none" stroke="#3a2c1e" stroke-width="2" stroke-linecap="round" opacity="0.55">
+        <polyline points="44,308 90,302 140,309 190,303 236,308 270,304" />
+        <polyline points="44,326 100,321 160,327 220,322 266,326" />
+        <polyline points="44,344 96,339 150,345 200,340 250,344" />
+      </g>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="window" id="window">
+
+  <!-- ============ NAV RAIL ============ -->
+  <nav class="rail">
+    <div class="rail__brand">Larder</div>
+    <p class="rail__tagline">Works offline. No account required.</p>
+    <ul class="rail__nav">
+      <li><button class="rail__link rail__link--active" type="button">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 8l8-5 8 5v11a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V8z"/><path d="M9 20v-7h6v7"/></svg>
+        Box
+      </button></li>
+      <li><button class="rail__link" type="button">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="5" width="16" height="15" rx="1.5"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>
+        Collections
+      </button></li>
+      <li><button class="rail__link" type="button">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="1.5"/><path d="M3 9h18M8 3v3M16 3v3"/></svg>
+        Meal Plan
+      </button></li>
+      <li><button class="rail__link" type="button">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 7h13l-1.4 9.6a2 2 0 0 1-2 1.4H8.6a2 2 0 0 1-2-1.6L5 4H3"/><circle cx="9" cy="21" r="1"/><circle cx="17" cy="21" r="1"/></svg>
+        Shopping List
+      </button></li>
+    </ul>
+    <div class="rail__spacer"></div>
+    <ul class="rail__nav">
+      <li><button class="rail__link" type="button">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6V21a2 2 0 1 1-4 0v-.2a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.6-1H3a2 2 0 1 1 0-4h.2a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.6V3a2 2 0 1 1 4 0v.2a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.6 1H21a2 2 0 1 1 0 4h-.2a1.7 1.7 0 0 0-1.5 1z"/></svg>
+        Settings
+      </button></li>
+    </ul>
+    <div class="rail__foot">Marcus Ibehi<br />Box: 14 recipes</div>
+  </nav>
+
+  <!-- ============ STAGE ============ -->
+  <main class="stage">
+
+    <!-- ---------------- SCREEN: BOX ---------------- -->
+    <section class="screen screen--active" data-screen="box">
+      <div class="screen__topbar">
+        <div class="screen__title-block">
+          <h1>Your Box</h1>
+          <p class="screen__meta">14 recipes</p>
+        </div>
+        <div class="add-menu-wrap">
+          <button class="btn btn--primary" id="btn-add-recipe" type="button" aria-haspopup="true" aria-expanded="false">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>
+            Add a recipe
+          </button>
+          <div class="add-menu" id="add-menu" role="menu">
+            <button class="add-menu__item" type="button" role="menuitem">
+              <span class="add-menu__icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+              </span>
+              <span>
+                <p class="add-menu__label">Type it in</p>
+                <p class="add-menu__desc">Enter a recipe by hand, field by field.</p>
+              </span>
+            </button>
+            <button class="add-menu__item" type="button" role="menuitem">
+              <span class="add-menu__icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.5.5l2-2a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7.5-.5l-2 2a5 5 0 0 0 7 7l1-1"/></svg>
+              </span>
+              <span>
+                <p class="add-menu__label">From a web link</p>
+                <p class="add-menu__desc">Paste a URL and Larder reads the page.</p>
+              </span>
+            </button>
+            <button class="add-menu__item" type="button" role="menuitem" id="btn-from-photo">
+              <span class="add-menu__icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="6" width="18" height="14" rx="2"/><circle cx="12" cy="13" r="3.2"/><path d="M8 6l1.4-2h5.2L16 6"/></svg>
+              </span>
+              <span>
+                <p class="add-menu__label">From a photo</p>
+                <p class="add-menu__desc">A card, a clipping, a page from a cookbook. One at a time, so nothing gets rushed.</p>
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="screen__body">
+        <div class="recipe-grid" id="recipe-grid">
+          <!-- existing recipes: static set-dressing so the Box doesn't look artificially empty -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------------- SCREEN: PICKER ---------------- -->
+    <section class="screen" data-screen="picker">
+      <div class="screen__topbar">
+        <button class="screen__back" type="button" data-goto="box">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M15 18l-6-6 6-6"/></svg>
+          Cancel
+        </button>
+      </div>
+      <div class="screen__body">
+        <div class="screen__title-block" style="text-align:center; max-width:460px; margin:0 auto 8px;">
+          <h1>Add a recipe from a photo</h1>
+        </div>
+        <div class="dropzone">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#8a7a5c" stroke-width="1.8"><rect x="3" y="6" width="18" height="14" rx="2"/><circle cx="12" cy="13" r="3.2"/><path d="M8 6l1.4-2h5.2L16 6"/></svg>
+          <p>Drop a photo here, or choose one from your computer.<br>Larder reads one recipe per photo, so pick the clearest shot of a single card or page.</p>
+          <button class="btn btn--secondary" id="btn-choose-file" type="button">Choose a photo…</button>
+          <div class="file-chip" id="file-chip">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3d5a3f" stroke-width="2"><rect x="3" y="6" width="18" height="14" rx="2"/><circle cx="12" cy="13" r="3.2"/></svg>
+            <div>
+              <p class="file-chip__name">moms-recipe-box-014.jpg</p>
+              <p class="file-chip__meta">2.1 MB · from Photos</p>
+            </div>
+          </div>
+        </div>
+        <div class="picker-actions">
+          <button class="btn btn--secondary" type="button" data-goto="box">Cancel</button>
+          <button class="btn btn--primary" id="btn-continue-picker" type="button" disabled>Continue</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------------- SCREEN: PROCESSING ---------------- -->
+    <section class="screen" data-screen="processing">
+      <div class="processing">
+        <svg class="processing__card" viewBox="0 0 300 400"><use href="#recipe-card" /></svg>
+        <p class="processing__label">Reading your recipe<span class="dots"><span></span><span></span><span></span></span></p>
+      </div>
+    </section>
+
+    <!-- ---------------- SCREEN: REVIEW ---------------- -->
+    <section class="screen" data-screen="review">
+      <div class="screen__topbar">
+        <button class="screen__back" type="button" data-goto="box">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M15 18l-6-6 6-6"/></svg>
+          Box
+        </button>
+        <div class="screen__title-block" style="text-align:right">
+          <p class="screen__meta" style="margin:0">Reviewing an import · from a photo</p>
+        </div>
+      </div>
+
+      <div class="screen__body" style="padding-bottom:0">
+        <div class="review-layout">
+
+          <div class="source-panel">
+            <svg class="source-panel__card" viewBox="0 0 300 400"><use href="#recipe-card" /></svg>
+            <p class="source-panel__label">The card Marcus photographed</p>
+          </div>
+
+          <div class="review-form">
+            <div class="review-group">
+              <h2 class="review-group__title">Mom's Sunday Gravy</h2>
+              <div class="field-row field-row--confirmed">
+                <p class="field-row__text">Serves 6 · Prep 20 min · Simmers 3 hr</p>
+                <span class="field-row__status">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M4 12l5 5 11-11"/></svg>
+                </span>
+              </div>
+            </div>
+
+            <div class="review-group">
+              <h3 class="review-group__title">Ingredients</h3>
+
+              <div class="field-row field-row--confirmed">
+                <p class="field-row__text">2 lb ground beef</p>
+                <span class="field-row__status"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M4 12l5 5 11-11"/></svg></span>
+              </div>
+
+              <button class="field-row field-row--flagged" id="flagged-row" type="button" aria-expanded="false">
+                <p class="field-row__text" id="flagged-text">2/8 cup breadcrumbs</p>
+                <span class="field-row__status"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9L2.5 18a2 2 0 0 0 1.7 3h15.6a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></span>
+              </button>
+
+              <div class="flagged-detail" id="flagged-detail">
+                <p class="flagged-detail__note">We read this as <strong>2/8 cup</strong> — that's an unusual amount for breadcrumbs, so we didn't count it as saved. Take a look at the card and set it right.</p>
+                <div class="flagged-detail__compare">
+                  <div class="flagged-detail__crop">
+                    <svg viewBox="0 0 300 400" width="840" height="1120" style="position:relative; left:-160px; top:-238px;"><use href="#recipe-card" /></svg>
+                  </div>
+                  <div class="flagged-detail__editfield">
+                    <label for="qty-input">Quantity, as best you can read it</label>
+                    <input type="text" id="qty-input" value="2/8 cup" />
+                  </div>
+                </div>
+                <div class="flagged-detail__actions">
+                  <button class="btn btn--confirm-line" id="btn-confirm-line" type="button">Confirm this line</button>
+                </div>
+              </div>
+
+              <div class="field-row field-row--confirmed">
+                <p class="field-row__text">1 egg</p>
+                <span class="field-row__status"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M4 12l5 5 11-11"/></svg></span>
+              </div>
+              <div class="field-row field-row--confirmed">
+                <p class="field-row__text">1 tsp salt</p>
+                <span class="field-row__status"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M4 12l5 5 11-11"/></svg></span>
+              </div>
+              <div class="field-row field-row--confirmed">
+                <p class="field-row__text">28 oz can crushed tomatoes</p>
+                <span class="field-row__status"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M4 12l5 5 11-11"/></svg></span>
+              </div>
+              <div class="field-row field-row--confirmed">
+                <p class="field-row__text">1 small onion, diced</p>
+                <span class="field-row__status"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M4 12l5 5 11-11"/></svg></span>
+              </div>
+              <div class="field-row field-row--confirmed">
+                <p class="field-row__text">3 cloves garlic</p>
+                <span class="field-row__status"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M4 12l5 5 11-11"/></svg></span>
+              </div>
+              <div class="field-row field-row--confirmed">
+                <p class="field-row__text">1 tsp dried oregano</p>
+                <span class="field-row__status"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M4 12l5 5 11-11"/></svg></span>
+              </div>
+            </div>
+
+            <div class="review-group">
+              <h3 class="review-group__title">Steps</h3>
+              <div class="field-row field-row--confirmed">
+                <p class="field-row__text">3 steps, read clearly — nothing to flag here</p>
+                <span class="field-row__status"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M4 12l5 5 11-11"/></svg></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="review-footer">
+        <div class="review-footer__status" id="review-status">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9L2.5 18a2 2 0 0 0 1.7 3h15.6a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
+          <span id="review-status-text">1 line needs a look before this recipe is saved.</span>
+        </div>
+        <button class="btn btn--primary" id="btn-save-recipe" type="button" disabled>Save recipe</button>
+      </div>
+    </section>
+
+    <!-- ---------------- SCREEN: DETAIL ---------------- -->
+    <section class="screen" data-screen="detail">
+      <div class="toast" id="toast">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M4 12l5 5 11-11"/></svg>
+        Saved to your Box
+      </div>
+      <div class="screen__topbar">
+        <button class="screen__back" type="button" data-goto="box">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M15 18l-6-6 6-6"/></svg>
+          Box
+        </button>
+      </div>
+      <div class="screen__body">
+        <div class="detail-header">
+          <div>
+            <div class="detail-title-row">
+              <h1>Mom's Sunday Gravy</h1>
+              <button class="icon-btn" type="button" aria-label="Edit title">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>
+              </button>
+            </div>
+            <p class="detail-source">Imported from a photo · added just now</p>
+          </div>
+        </div>
+
+        <div class="stat-chips">
+          <span class="stat-chip"><strong>6</strong>&nbsp;servings</span>
+          <span class="stat-chip">Prep&nbsp;<strong>20 min</strong></span>
+          <span class="stat-chip">Simmers&nbsp;<strong>3 hr</strong></span>
+          <span class="stat-chip stat-chip--trust">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M4 12l5 5 11-11"/></svg>
+            You reviewed this import
+          </span>
+        </div>
+
+        <div class="tabs">
+          <button class="tab tab--active" type="button">Ingredients</button>
+          <button class="tab" type="button">Steps</button>
+          <button class="tab" type="button">Notes</button>
+        </div>
+
+        <ul class="detail-ingredients">
+          <li><span>Ground beef</span><span>2 lb</span></li>
+          <li data-corrected><span>Breadcrumbs</span><span>2/3 cup</span></li>
+          <li><span>Egg</span><span>1</span></li>
+          <li><span>Salt</span><span>1 tsp</span></li>
+          <li><span>Crushed tomatoes</span><span>28 oz can</span></li>
+          <li><span>Onion, diced</span><span>1 small</span></li>
+          <li><span>Garlic</span><span>3 cloves</span></li>
+          <li><span>Dried oregano</span><span>1 tsp</span></li>
+        </ul>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Larder: Plan the Week</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="stage">
+  <div class="window" role="application" aria-label="Larder">
+
+    <!-- Title bar: Mac chrome shown; Windows chrome is Q13, still open -->
+    <header class="titlebar">
+      <div class="lights" aria-hidden="true"><span></span><span></span><span></span></div>
+      <div class="titlebar-title">Larder</div>
+      <button class="notes-toggle" id="notesToggle" aria-pressed="false" title="Show design notes (N)">
+        Design notes
+      </button>
+    </header>
+
+    <div class="app">
+      <nav class="sidebar" aria-label="Main">
+        <div class="brand">Larder</div>
+        <ul class="nav">
+          <li><button class="nav-item" data-inert>Box <span class="count">64</span></button></li>
+          <li><button class="nav-item" data-inert>Collections</button></li>
+          <li><button class="nav-item is-current" data-go="plan" id="navPlan">Meal Plan</button></li>
+          <li><button class="nav-item" data-go="list" id="navList">Shopping List <span class="count" id="navListCount" hidden></span></button></li>
+        </ul>
+        <div class="sidebar-foot">
+          <div class="backup">
+            <span class="dot" aria-hidden="true"></span>
+            Saved on this Mac<br><span class="muted">Backed up to Time Machine yesterday</span>
+          </div>
+        </div>
+      </nav>
+
+      <main class="main" id="main">
+
+        <!-- ============ VIEW: MEAL PLAN ============ -->
+        <section class="view" id="view-plan" aria-labelledby="planTitle">
+          <div class="view-head">
+            <div>
+              <h1 id="planTitle">Next week</h1>
+              <p class="sub">Monday Sep 28 to Sunday Oct 4</p>
+            </div>
+            <div class="sent-banner" id="planSentBanner" hidden></div>
+          </div>
+
+          <div class="plan-layout">
+            <div class="board-wrap">
+              <div class="board" id="board"></div>
+              <p class="empty-hint" id="emptyHint">
+                Nothing planned yet. Drag a recipe from your rotation onto a night, or press <strong>+ Add</strong> on any night.
+              </p>
+            </div>
+
+            <aside class="rail" aria-labelledby="railTitle">
+              <h2 id="railTitle">Your rotation</h2>
+              <p class="rail-sub">Longest since you made it comes first</p>
+              <ul class="rail-list" id="railList"></ul>
+              <button class="link-btn" id="railSearch">Search the whole Box</button>
+            </aside>
+          </div>
+
+          <footer class="plan-foot">
+            <p class="plan-summary" id="planSummary">No dinners planned</p>
+            <button class="pill pill-primary" id="makeList" disabled>
+              <span class="pill-disc" aria-hidden="true">
+                <svg viewBox="0 0 20 20" width="16" height="16"><path d="M5 6h10M5 10h10M5 14h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/></svg>
+              </span>
+              <span id="makeListLabel">Make shopping list</span>
+            </button>
+          </footer>
+        </section>
+
+        <!-- ============ VIEW: SHOPPING LIST ============ -->
+        <section class="view" id="view-list" hidden aria-labelledby="listTitle">
+          <div class="list-layout">
+            <div class="ticket-col">
+              <article class="ticket" id="ticket" aria-labelledby="listTitle">
+                <div class="ticket-head">
+                  <h1 id="listTitle">Groceries</h1>
+                  <p class="ticket-meta" id="ticketMeta"></p>
+                  <p class="stale-note" id="staleNote" hidden>Updated to match your changed plan. Your own items and ticks are still here.</p>
+                </div>
+                <div class="ticket-body" id="ticketBody"></div>
+              </article>
+            </div>
+
+            <aside class="list-side">
+              <form class="add-item" id="addItemForm" autocomplete="off">
+                <label for="addItem">Add something else</label>
+                <div class="add-row">
+                  <input id="addItem" type="text" placeholder="Milk, bin bags, lunchbox snacks">
+                  <button class="pill pill-quiet" type="submit">Add</button>
+                </div>
+              </form>
+
+              <div class="side-block">
+                <h2>From your plan</h2>
+                <ul class="plan-recap" id="planRecap"></ul>
+                <button class="link-btn" data-go="plan">Change the plan</button>
+              </div>
+
+              <div class="side-block take-block">
+                <p class="take-copy">Your list stays on this Mac. Send a copy to your phone or print it before you head out.</p>
+                <button class="pill pill-primary" id="openTakeout">
+                  <span class="pill-disc" aria-hidden="true">
+                    <svg viewBox="0 0 20 20" width="16" height="16"><rect x="6" y="2.5" width="8" height="15" rx="2" stroke="currentColor" stroke-width="1.7" fill="none"/><path d="M9 14.5h2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+                  </span>
+                  Take it with you
+                </button>
+                <p class="sent-status" id="sentStatus" hidden></p>
+              </div>
+            </aside>
+          </div>
+        </section>
+
+      </main>
+
+      <!-- Design notes drawer -->
+      <aside class="notes" id="notes" hidden aria-label="Design notes">
+        <div class="notes-head">
+          <h2>Design notes</h2>
+          <button class="icon-btn" id="notesClose" aria-label="Close design notes">×</button>
+        </div>
+        <div class="notes-body" id="notesBody"></div>
+      </aside>
+    </div>
+
+    <!-- Recipe picker popover -->
+    <div class="picker" id="picker" hidden role="dialog" aria-label="Add a recipe">
+      <div class="picker-head">
+        <input id="pickerInput" type="search" placeholder="Search by name or ingredient" aria-label="Search recipes">
+        <p class="picker-for" id="pickerFor"></p>
+      </div>
+      <div class="picker-filters" id="pickerFilters" role="group" aria-label="Filter by Collection"></div>
+      <ul class="picker-list" id="pickerList" role="listbox"></ul>
+      <p class="picker-foot"><kbd>↑</kbd><kbd>↓</kbd> to move <kbd>Return</kbd> to add <kbd>Esc</kbd> to close</p>
+    </div>
+
+    <!-- Take it with you sheet -->
+    <div class="scrim" id="scrim" hidden></div>
+    <div class="sheet" id="sheet" hidden role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+      <div class="sheet-head">
+        <h2 id="sheetTitle">Take your list to the store</h2>
+        <button class="icon-btn" id="sheetClose" aria-label="Close">×</button>
+      </div>
+      <div class="sheet-body">
+        <div class="methods" role="radiogroup" aria-label="How to take it">
+          <button class="method is-on" role="radio" aria-checked="true" data-method="phone">
+            <span class="method-title">Send to my phone</span>
+            <span class="method-sub">Sends the list as plain text to Messages, Mail or Notes, wherever you already keep lists. No account needed.</span>
+          </button>
+          <button class="method" role="radio" aria-checked="false" data-method="print">
+            <span class="method-title">Print it</span>
+            <span class="method-sub">One narrow page, grouped by aisle. Tear it off and take it with you.</span>
+          </button>
+          <button class="method" role="radio" aria-checked="false" data-method="copy">
+            <span class="method-title">Copy as text</span>
+            <span class="method-sub">Paste it into anything: a family chat, a reminders app.</span>
+          </button>
+          <p class="method-note">Your ticks on the phone won't come back to Larder. It's a copy, not a sync.</p>
+        </div>
+        <div class="preview" id="preview"></div>
+      </div>
+      <div class="sheet-foot">
+        <span class="sheet-count" id="sheetCount"></span>
+        <div class="share-anchor">
+          <button class="pill pill-primary" id="sheetAction">Send to phone</button>
+          <div class="share-menu" id="shareMenu" hidden role="menu" aria-label="Share with">
+            <button role="menuitem" data-target="Messages"><span class="app-ico ico-messages"></span>Messages</button>
+            <button role="menuitem" data-target="Mail"><span class="app-ico ico-mail"></span>Mail</button>
+            <button role="menuitem" data-target="Notes"><span class="app-ico ico-notes"></span>Notes</button>
+            <button role="menuitem" data-target="AirDrop"><span class="app-ico ico-airdrop"></span>AirDrop</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
